@@ -5,6 +5,8 @@
 A three-step product form inside a modal dialog, alongside a product list whose pagination lives
 in the URL. The interface itself is in Polish, matching the brief and the supplied design.
 
+Live demo: [multi-step-form-two-blond.vercel.app](https://multi-step-form-two-blond.vercel.app/)
+
 ## Getting started
 
 ```bash
