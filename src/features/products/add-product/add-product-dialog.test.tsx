@@ -421,6 +421,16 @@ describe('AddProductDialog', () => {
     expect(screen.getByText(message)).toBeInTheDocument();
   });
 
+  it('rejects a name longer than 100 characters', async () => {
+    const user = setup();
+    await openDialog(user);
+    await user.click(screen.getByLabelText('Nazwa produktu'));
+    await user.paste('M'.repeat(101));
+    await next(user);
+
+    expect(screen.getByText('Nazwa może mieć maksymalnie 100 znaków')).toBeInTheDocument();
+  });
+
   it('clears the cart-range error once the other field is fixed', async () => {
     const user = setup();
     await goToAvailabilityStep(user);
