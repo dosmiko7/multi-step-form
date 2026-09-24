@@ -33,8 +33,8 @@ export function PaginationSummary({
 
 type PageItem = number | 'ellipsis';
 
-function buildPageItems(page: number, pageCount: number): PageItem[] {
-  const anchors = [1, pageCount, page - 1, page, page + 1];
+function buildPageItems(page: number, pageCount: number, siblingCount: number): PageItem[] {
+  const anchors = [1, pageCount, page - siblingCount, page, page + siblingCount];
   const visible = [...new Set(anchors)]
     .filter((value) => value >= 1 && value <= pageCount)
     .sort((a, b) => a - b);
@@ -48,27 +48,29 @@ function buildPageItems(page: number, pageCount: number): PageItem[] {
   });
 }
 
-export function ProductPagination({
+function PaginationBar({
   page,
   pageCount,
   onPageChange,
-}: Pick<PaginationProps, 'page' | 'pageCount' | 'onPageChange'>) {
-  if (pageCount === 1) {
-    return null;
-  }
-
+  siblingCount,
+  className,
+}: Pick<PaginationProps, 'page' | 'pageCount' | 'onPageChange'> & {
+  siblingCount: number;
+  className: string;
+}) {
   return (
-    <Pagination>
+    <Pagination className={className}>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
             text="Wstecz"
+            className="max-[380px]:pr-1.5! max-[380px]:[&>span]:hidden"
             aria-label="Przejdź do poprzedniej strony"
             disabled={page === 1}
             onClick={() => onPageChange(page - 1)}
           />
         </PaginationItem>
-        {buildPageItems(page, pageCount).map((item, index) =>
+        {buildPageItems(page, pageCount, siblingCount).map((item, index) =>
           item === 'ellipsis' ? (
             <PaginationItem key={`ellipsis-${index}`}>
               <PaginationEllipsis />
@@ -88,6 +90,7 @@ export function ProductPagination({
         <PaginationItem>
           <PaginationNext
             text="Dalej"
+            className="max-[380px]:pl-1.5! max-[380px]:[&>span]:hidden"
             aria-label="Przejdź do następnej strony"
             disabled={page === pageCount}
             onClick={() => onPageChange(page + 1)}
@@ -95,5 +98,20 @@ export function ProductPagination({
         </PaginationItem>
       </PaginationContent>
     </Pagination>
+  );
+}
+
+export function ProductPagination(
+  props: Pick<PaginationProps, 'page' | 'pageCount' | 'onPageChange'>,
+) {
+  if (props.pageCount === 1) {
+    return null;
+  }
+
+  return (
+    <>
+      <PaginationBar {...props} siblingCount={0} className="sm:hidden" />
+      <PaginationBar {...props} siblingCount={1} className="max-sm:hidden" />
+    </>
   );
 }
