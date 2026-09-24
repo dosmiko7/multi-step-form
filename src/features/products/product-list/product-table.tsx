@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { PRODUCTS_PER_PAGE } from '@/features/products/hooks/use-products-page';
 
-import { COLUMN_WIDTH_CLASSES, PRODUCT_COLUMNS } from './product-columns';
+import { PRODUCT_COLUMNS } from './product-columns';
 import { PaginationSummary, ProductPagination, type PaginationProps } from './product-pagination';
 import type { ProductRowView } from './product-row-view';
 
@@ -30,7 +30,7 @@ function TableFrame({ rows }: { rows: TableRowValue[] }) {
       <TableHeader>
         <TableRow>
           {PRODUCT_COLUMNS.map((column) => (
-            <TableHead key={column.label} className={COLUMN_WIDTH_CLASSES[column.width]}>
+            <TableHead key={column.label} className={column.width}>
               {column.label}
             </TableHead>
           ))}
