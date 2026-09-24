@@ -1,9 +1,14 @@
 import { render, screen, within } from '@testing-library/react';
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
-import { describe, expect, it } from 'vitest';
+import type { OnUrlUpdateFunction } from 'nuqs/adapters/testing';
+import { describe, expect, it, vi } from 'vitest';
 
 import { getProducts } from '@/features/products/api/get-products';
+import { ADDED_PRODUCTS_KEY } from '@/features/products/stores/added-products-storage';
 import { ProductsProvider } from '@/features/products/stores/products-store';
+import { renderHydrated } from '@/testing/hydrate';
+import { createTestProduct } from '@/testing/products';
+import { settleUrl } from '@/testing/settle-url';
 
 import { ProductList } from './product-list';
 import { ProductTableSkeleton } from './product-table';
@@ -76,6 +81,39 @@ describe('ProductList', () => {
 
     expect(screen.getAllByText('Strona 1 z 1 · 5 produktów')).toHaveLength(2);
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+  });
+});
+
+describe('ProductList after a refresh', () => {
+  const ADDED = createTestProduct('Dell XPS 13');
+
+  function refreshAt(searchParams: string) {
+    const onUrlUpdate: OnUrlUpdateFunction = vi.fn();
+
+    renderHydrated(
+      <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={onUrlUpdate}>
+        <ProductsProvider initialProducts={getProducts()}>
+          <ProductList />
+        </ProductsProvider>
+      </NuqsTestingAdapter>,
+    );
+
+    return { onUrlUpdate };
+  }
+
+  it('stays on the page in the URL, with the products added before the refresh', async () => {
+    localStorage.setItem(ADDED_PRODUCTS_KEY, JSON.stringify([ADDED]));
+
+    const { onUrlUpdate } = refreshAt('?page=2');
+
+    expect(await screen.findAllByText('Strona 2 z 2 · 6 produktów')).toHaveLength(2);
+    expect(screen.getByText('6 produktów w katalogu')).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('table')).getByRole('cell', { name: 'Xiaomi Smart Band 8' }),
+    ).toBeInTheDocument();
+
+    await settleUrl();
+    expect(onUrlUpdate).not.toHaveBeenCalled();
   });
 });
 

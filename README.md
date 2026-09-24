@@ -68,4 +68,6 @@ Unit tests cover the price arithmetic — including the cases where a floating-p
 implementation drifts away from whole grosze — and amount formatting. Component tests walk
 through the dialog the way a reviewer would: a step blocked by errors, stepping back without
 losing data, price recalculation in both directions, the stock field appearing and clearing with
-its checkbox, an inverted cart range, saving a product, and the reset after closing.
+its checkbox, an inverted cart range, saving a product, and the reset after closing. A list test
+renders the page the way a browser does — server HTML, then hydration — and checks that a
+refresh on `?page=2` stays there, with the products added before it.

@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { getProducts } from '@/features/products/api/get-products';
 import { PRODUCTS_PER_PAGE, useProductsPage } from '@/features/products/hooks/use-products-page';
+import { settleUrl } from '@/testing/settle-url';
 
 const products = [...getProducts(), ...getProducts()];
 
@@ -25,9 +26,6 @@ function renderPage(searchParams: string) {
   return { result, onUrlUpdate };
 }
 
-/** nuqs writes the URL on a timer, so a correction that is coming has landed by now. */
-const settle = () => new Promise((resolve) => setTimeout(resolve, 100));
-
 const correctedTo = (queryString: string) =>
   expect.objectContaining({
     queryString,
@@ -42,7 +40,7 @@ describe('useProductsPage', () => {
     expect(result.current.pageCount).toBe(LAST_PAGE);
     expect(result.current.visibleProducts).toHaveLength(PRODUCTS_PER_PAGE);
 
-    await settle();
+    await settleUrl();
     expect(onUrlUpdate).not.toHaveBeenCalled();
   });
 
@@ -51,7 +49,7 @@ describe('useProductsPage', () => {
 
     expect(result.current.page).toBe(2);
 
-    await settle();
+    await settleUrl();
     expect(onUrlUpdate).not.toHaveBeenCalled();
   });
 

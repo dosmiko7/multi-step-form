@@ -1,11 +1,13 @@
 'use client';
 
-import { createContext, use, useCallback, useMemo, useState, type ReactNode } from 'react';
+import { createContext, use, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react';
 
 import type { Product } from '@/features/products/domain/product';
+import { createAddedProductsStore } from '@/features/products/stores/added-products-storage';
 
 type ProductsContextValue = {
   products: Product[];
+  hasReadStorage: boolean;
   addProduct: (product: Product) => void;
 };
 
@@ -18,16 +20,20 @@ export function ProductsProvider({
   initialProducts: Product[];
   children: ReactNode;
 }) {
-  const [products, setProducts] = useState(initialProducts);
-
-  const addProduct = useCallback(
-    (product: Product) => setProducts((current) => [product, ...current]),
-    [],
+  const [addedProductsStore] = useState(createAddedProductsStore);
+  const { products: addedProducts, hasReadStorage } = useSyncExternalStore(
+    addedProductsStore.subscribe,
+    addedProductsStore.getSnapshot,
+    addedProductsStore.getServerSnapshot,
   );
 
   const value = useMemo<ProductsContextValue>(
-    () => ({ products, addProduct }),
-    [products, addProduct],
+    () => ({
+      products: [...addedProducts, ...initialProducts],
+      hasReadStorage,
+      addProduct: addedProductsStore.add,
+    }),
+    [addedProducts, hasReadStorage, initialProducts, addedProductsStore],
   );
 
   return <ProductsContext value={value}>{children}</ProductsContext>;

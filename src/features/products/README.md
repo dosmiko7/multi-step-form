@@ -12,10 +12,11 @@ src/features/products/
     form/         the form's logic — schemas, form hook, net ⇄ gross, step focus
     fields/       field wrappers over the shared UI controls
     steps/        the three screens
-  domain/         product             the type, the vocabularies it is made of, the factory
-  api/            get-products        catalogue data source (a mock stands in for a backend)
-  stores/         products-store      in-memory catalogue (React context)
-  hooks/          use-products-page   page number in the URL, plus the visible slice
+  domain/         product                  the type, the vocabularies it is made of, the factory
+  api/            get-products             catalogue data source (a mock stands in for a backend)
+  stores/         products-store           the catalogue: seed plus added products (React context)
+                  added-products-storage   the added products, kept in localStorage behind a subscribable store
+  hooks/          use-products-page        page number in the URL, plus the visible slice
 ```
 
 ## Dependency direction
