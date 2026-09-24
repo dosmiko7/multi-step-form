@@ -127,6 +127,16 @@ select is a control in name only.
 There is no empty state: the catalogue starts seeded and nothing deletes, so the state is
 unreachable through the UI. Deletion would justify it.
 
+## Long names
+
+The brief sets only a minimum for the name; the form caps it at 100 characters, enough for any
+real product name and short enough to read in one tooltip. In the table the name wraps to two
+lines and ends in an ellipsis — a single truncated line kept the column at the full text width,
+so the table scrolled sideways. A tooltip shows the whole name, but only when the clamp cut
+something off; it is checked on hover, so there is no resize observer per row. The trigger is
+not focusable — it would add a tab stop per row to a read-only table — and the full name stays
+in the DOM for screen readers. Cards show the whole name: touch has no hover to reveal it.
+
 ## Design fidelity
 
 Tokens — colours, radii, sizes — are transcribed from the `.fig` file into

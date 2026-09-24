@@ -68,7 +68,11 @@ function selectField<TValue extends string>(values: readonly [TValue, ...TValue[
 }
 
 export const basicsSchema = z.object({
-  name: z.string().trim().min(3, { error: 'Nazwa musi mieć co najmniej 3 znaki' }),
+  name: z
+    .string()
+    .trim()
+    .min(3, { error: 'Nazwa musi mieć co najmniej 3 znaki' })
+    .max(100, { error: 'Nazwa może mieć maksymalnie 100 znaków' }),
   sku: z
     .string()
     .trim()
