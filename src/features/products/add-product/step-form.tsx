@@ -33,7 +33,7 @@ export function StepForm({
       <DialogBody>{children}</DialogBody>
       <DialogFooter>
         {currentStep > 0 && (
-          <Button type="button" variant="outline" size="lg" radius="lg" onClick={onBack}>
+          <Button type="button" variant="outline" size="lg" onClick={onBack}>
             <ArrowLeftIcon data-icon="inline-start" />
             Wstecz
           </Button>
