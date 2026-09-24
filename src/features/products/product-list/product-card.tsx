@@ -69,7 +69,7 @@ export function ProductCardSkeleton() {
 export function ProductCard({ row }: { row: ProductRowView }) {
   return (
     <ProductCardShell
-      name={<p className="truncate text-base leading-6 font-medium">{row.name}</p>}
+      name={<p className="text-base leading-6 font-medium wrap-anywhere">{row.name}</p>}
       sku={<p className="truncate text-xs text-muted-foreground">{row.sku}</p>}
       status={<ProductStatusBadge isAvailable={row.isAvailable} />}
     >

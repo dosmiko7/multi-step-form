@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { ProductName } from './product-name';
 import type { ProductRowView } from './product-row-view';
 import { ProductStatusBadge } from './product-status-badge';
 
@@ -24,8 +25,8 @@ export const PRODUCT_COLUMNS: ProductColumn[] = [
   {
     label: 'Nazwa',
     width: 'fluid',
-    className: 'truncate font-medium',
-    cell: (row) => row.name,
+    className: 'font-medium',
+    cell: (row) => <ProductName name={row.name} />,
     placeholder: <Skeleton className="h-4 w-full" />,
   },
   {
