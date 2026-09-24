@@ -149,9 +149,9 @@ line-height 1.5.
   `Strona 1 z 2`. The design is the only version where pagination is actually visible.
 - The Figma labels the description Textarea `Nazwa produktu` — a copy/paste slip in the design.
   `Opis` is used instead.
-- The two footer buttons do not share a radius: `Wstecz` sits at the theme's 10px while `Dalej`
-  and `Zapisz produkt` are full pills. It reads like two different kit components rather than a
-  decision, but it is what the file draws, so it is what ships.
+- The two footer buttons do not share a radius in the file: `Wstecz` sits at the theme's 10px
+  while `Dalej` and `Zapisz produkt` are full pills. It reads like two different kit components
+  rather than a decision, so all three ship as pills.
 - Several shadcn-kit placeholders (`This is an input description.`, `Forgot your password?`,
   `This is a dialog description.`, `KbdGroup` shortcut chips) are hidden layers in the file and
   are not part of the design.
