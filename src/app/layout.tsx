@@ -12,7 +12,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: 'Katalog produktów — Mikołaj Oberda',
+  title: 'Mikołaj Oberda — Katalog produktów',
   description: 'Wieloetapowy formularz dodawania produktu.',
 };
 
