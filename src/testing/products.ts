@@ -1,6 +1,5 @@
 import { createProduct, type Product } from '@/features/products/domain/product';
 
-/** A limited product, so a test can also break its stock level. */
 export function createTestProduct(name: string): Product {
   return createProduct({
     name,

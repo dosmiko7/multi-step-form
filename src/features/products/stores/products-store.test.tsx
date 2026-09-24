@@ -75,23 +75,6 @@ describe('ProductsProvider', () => {
     expect(catalogue.names()).toEqual(SEED_NAMES);
   });
 
-  it.each([
-    ['a missing field', { sku: undefined }],
-    ['a currency the app cannot format', { currency: 'GBP' }],
-    ['a VAT rate outside the list', { vatRate: 7 }],
-    ['a feature outside the list', { features: ['wifi', 'nfc'] }],
-    ['a price that is not a number', { grossPrice: '123' }],
-    ['a limited product with no stock level', { stockQuantity: undefined }],
-  ])('skips an entry with %s and keeps the rest', (_, corruption) => {
-    const readable = createTestProduct('Dell XPS 13');
-    const corrupted = { ...createTestProduct('Dell XPS 15'), ...corruption };
-    localStorage.setItem(ADDED_PRODUCTS_KEY, JSON.stringify([corrupted, readable]));
-
-    const catalogue = renderCatalogue();
-
-    expect(catalogue.names()).toEqual(['Dell XPS 13', ...SEED_NAMES]);
-  });
-
   it('keeps an added product for the visit when storage refuses to write', () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new DOMException('Quota exceeded', 'QuotaExceededError');

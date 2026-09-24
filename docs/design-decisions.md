@@ -139,10 +139,10 @@ Until then the list shows its skeleton — which the static page already serves 
 clamp measured against the seed alone would rewrite `?page=2` to `?page=1` before the saved
 products arrive. The count in the header can change once hydration ends; that is accepted.
 
-Stored entries are checked field by field against the domain's vocabularies, and one that fails
-is skipped: storage is outside the app's control, and an unknown currency would crash the list
-mid-render. The check is hand-written, not Zod: storage is read on first load, and even
-`zod/mini` added 25 KB gzipped there, since Turbopack shares Zod's core with the lazy form chunk.
+Stored entries are trusted, not validated. The versioned key already covers the one realistic
+way the shape can drift, a deploy that changes the product; what remains is someone editing
+their own storage in devtools, and a field-by-field check (or Zod, at 25 KB gzipped on first
+load) is not worth carrying for that.
 
 Storage that refuses to write (a full quota, a locked-down browser) keeps the product for the
 visit. A save in another tab shows up through the `storage` event.
