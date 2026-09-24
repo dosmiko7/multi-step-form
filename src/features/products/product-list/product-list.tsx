@@ -2,6 +2,7 @@
 
 import { Suspense } from 'react';
 
+import { AddProductDialog } from '@/features/products/add-product/add-product-dialog';
 import { useProductsPage } from '@/features/products/hooks/use-products-page';
 import { useProducts } from '@/features/products/stores/products-store';
 
@@ -46,6 +47,7 @@ export function ProductList() {
             {formatProductCount(products.length)} w katalogu
           </p>
         </div>
+        <AddProductDialog />
       </div>
 
       <Suspense fallback={<PaginatedProductsSkeleton />}>
