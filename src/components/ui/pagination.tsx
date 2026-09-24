@@ -33,10 +33,6 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
   return <li data-slot="pagination-item" {...props} />
 }
 
-/**
- * Renders a button rather than shadcn's default anchor: paging is client-side URL state
- * (nuqs), so an <a href> would trigger a full navigation and drop the in-memory catalogue.
- */
 type PaginationLinkProps = {
   isActive?: boolean
 } & Pick<React.ComponentProps<typeof Button>, "size"> &
@@ -53,9 +49,11 @@ function PaginationLink({
     <Button
       variant={isActive ? "default" : "ghost"}
       size={size}
-      // Page numbers keep the theme radius. Without this they would inherit the pill shape
-      // that `Button` now defaults to, and the design draws them as rounded squares.
-      className={cn("rounded-md", className)}
+      className={cn(
+        "rounded-md transition-none",
+        isActive && "hover:bg-primary",
+        className
+      )}
       type={type}
       aria-current={isActive ? "page" : undefined}
       data-slot="pagination-link"
