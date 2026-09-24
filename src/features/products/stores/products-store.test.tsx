@@ -74,6 +74,31 @@ describe('ProductsProvider', () => {
     expect(catalogue.names()).toEqual(SEED_NAMES);
   });
 
+  it.each([
+    ['is not an object', null],
+    ['has no SKU', { ...createTestProduct('Dell XPS 15'), sku: undefined }],
+    [
+      'has a price that is not a number',
+      { ...createTestProduct('Dell XPS 15'), grossPrice: '123' },
+    ],
+    ['has a category outside the list', { ...createTestProduct('Dell XPS 15'), category: 'meble' }],
+    [
+      'has a currency the app cannot format',
+      { ...createTestProduct('Dell XPS 15'), currency: 'GBP' },
+    ],
+    [
+      'is limited with no stock level',
+      { ...createTestProduct('Dell XPS 15'), stockQuantity: undefined },
+    ],
+  ])('drops a stored entry that %s and keeps the rest', (_, corrupted) => {
+    const readable = createTestProduct('Dell XPS 13');
+    localStorage.setItem(ADDED_PRODUCTS_KEY, JSON.stringify([corrupted, readable]));
+
+    const catalogue = renderCatalogue();
+
+    expect(catalogue.names()).toEqual(['Dell XPS 13', ...SEED_NAMES]);
+  });
+
   it('keeps an added product for the visit when storage refuses to write', () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new DOMException('Quota exceeded', 'QuotaExceededError');
