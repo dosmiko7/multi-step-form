@@ -7,7 +7,7 @@ import { PRODUCT_FORM_STEPS } from './product-form-steps';
 
 export function FormStepper({ currentStep }: { currentStep: number }) {
   return (
-    <div className="border-b px-4 py-6 sm:py-3">
+    <div className="border-b px-4 py-6 max-sm:mx-4 max-sm:px-0 sm:py-3">
       <ol
         aria-label="Postęp formularza"
         className="flex items-start justify-between gap-4 sm:items-center sm:justify-start"
