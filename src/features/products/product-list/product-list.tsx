@@ -36,7 +36,7 @@ function PaginatedProducts() {
 }
 
 export function ProductList() {
-  const { products, isRestored } = useProducts();
+  const { products, hasReadStorage } = useProducts();
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
@@ -51,7 +51,7 @@ export function ProductList() {
       </div>
 
       <Suspense fallback={<PaginatedProductsSkeleton />}>
-        {isRestored ? <PaginatedProducts /> : <PaginatedProductsSkeleton />}
+        {hasReadStorage ? <PaginatedProducts /> : <PaginatedProductsSkeleton />}
       </Suspense>
     </div>
   );

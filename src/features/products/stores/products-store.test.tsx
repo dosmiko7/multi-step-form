@@ -23,15 +23,15 @@ function renderCatalogue() {
   return {
     unmount,
     add: (name: string) => act(() => result.current.addProduct(createTestProduct(name))),
-    isRestored: () => result.current.isRestored,
+    hasReadStorage: () => result.current.hasReadStorage,
     names: () => result.current.products.map((product) => product.name),
   };
 }
 
 function CatalogueSummary() {
-  const { products, isRestored } = useProducts();
+  const { products, hasReadStorage } = useProducts();
 
-  return `restored: ${isRestored}, products: ${products.length}`;
+  return `read storage: ${hasReadStorage}, products: ${products.length}`;
 }
 
 afterEach(() => {
@@ -47,7 +47,7 @@ describe('ProductsProvider', () => {
 
     const secondVisit = renderCatalogue();
 
-    expect(secondVisit.isRestored()).toBe(true);
+    expect(secondVisit.hasReadStorage()).toBe(true);
     expect(secondVisit.names()).toEqual(['Dell XPS 15', 'Dell XPS 13', ...SEED_NAMES]);
   });
 
@@ -60,7 +60,7 @@ describe('ProductsProvider', () => {
       </Catalogue>,
     );
 
-    expect(html).toBe(`restored: false, products: ${SEED.length}`);
+    expect(html).toBe(`read storage: false, products: ${SEED.length}`);
   });
 
   it.each([
@@ -71,7 +71,7 @@ describe('ProductsProvider', () => {
 
     const catalogue = renderCatalogue();
 
-    expect(catalogue.isRestored()).toBe(true);
+    expect(catalogue.hasReadStorage()).toBe(true);
     expect(catalogue.names()).toEqual(SEED_NAMES);
   });
 

@@ -20,7 +20,7 @@ function writeAddedProducts(products: Product[]) {
   } catch {}
 }
 
-export type AddedProductsStorage = {
+export type AddedProductsStore = {
   subscribe: (onChange: () => void) => () => void;
   getSnapshot: () => Product[];
   add: (product: Product) => void;
@@ -30,7 +30,7 @@ export type AddedProductsStorage = {
  * The products added in this browser, newest first, shaped for `useSyncExternalStore`. A save in
  * another tab drops the cached copy, and the next snapshot reads storage again.
  */
-export function createAddedProductsStorage(): AddedProductsStorage {
+export function createAddedProductsStore(): AddedProductsStore {
   let cachedProducts: Product[] | undefined;
   const listeners = new Set<() => void>();
 

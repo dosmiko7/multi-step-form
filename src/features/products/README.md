@@ -15,7 +15,7 @@ src/features/products/
   domain/         product                  the type, the vocabularies it is made of, the factory
   api/            get-products             catalogue data source (a mock stands in for a backend)
   stores/         products-store           the catalogue: seed plus added products (React context)
-                  added-products-storage   added products in localStorage, for useSyncExternalStore
+                  added-products-storage   the added products, kept in localStorage behind a subscribable store
   hooks/          use-products-page        page number in the URL, plus the visible slice
 ```
 
