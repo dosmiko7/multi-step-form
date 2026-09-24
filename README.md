@@ -69,7 +69,3 @@ implementation drifts away from whole grosze — and amount formatting. Componen
 through the dialog the way a reviewer would: a step blocked by errors, stepping back without
 losing data, price recalculation in both directions, the stock field appearing and clearing with
 its checkbox, an inverted cart range, saving a product, and the reset after closing.
-
-## Deployment
-
-_Link to be added once deployed._
