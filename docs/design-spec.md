@@ -152,6 +152,10 @@ line-height 1.5.
 - The two footer buttons do not share a radius in the file: `Wstecz` sits at the theme's 10px
   while `Dalej` and `Zapisz produkt` are full pills. It reads like two different kit components
   rather than a decision, so all three ship as pills.
+- The `Limity koszyka` heading is drawn at 14px — the same size as the field labels around it.
+  It ships at 16px so the section heading reads as one. Switch and checkbox labels ship Medium
+  like every other label; the lighter weight came from the kit's horizontal-field exception,
+  not from the design.
 - Several shadcn-kit placeholders (`This is an input description.`, `Forgot your password?`,
   `This is a dialog description.`, `KbdGroup` shortcut chips) are hidden layers in the file and
   are not part of the design.
