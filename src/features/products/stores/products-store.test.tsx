@@ -4,7 +4,7 @@ import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { getProducts } from '@/features/products/api/get-products';
-import { createProduct, type Product } from '@/features/products/domain/product';
+import { createTestProduct } from '@/testing/products';
 
 import { ADDED_PRODUCTS_KEY } from './added-products-storage';
 import { ProductsProvider, useProducts } from './products-store';
@@ -12,23 +12,6 @@ import { ProductsProvider, useProducts } from './products-store';
 const SEED = getProducts();
 
 const SEED_NAMES = SEED.map((product) => product.name);
-
-function newProduct(name: string): Product {
-  return createProduct({
-    name,
-    sku: 'NEW1',
-    manufacturer: 'dell',
-    category: 'komputery',
-    features: ['wifi'],
-    netPrice: 100,
-    grossPrice: 123,
-    vatRate: 23,
-    currency: 'PLN',
-    isAvailable: true,
-    isLimited: true,
-    stockQuantity: 3,
-  });
-}
 
 function Catalogue({ children }: { children: ReactNode }) {
   return <ProductsProvider initialProducts={SEED}>{children}</ProductsProvider>;
@@ -39,7 +22,7 @@ function renderCatalogue() {
 
   return {
     unmount,
-    add: (name: string) => act(() => result.current.addProduct(newProduct(name))),
+    add: (name: string) => act(() => result.current.addProduct(createTestProduct(name))),
     isRestored: () => result.current.isRestored,
     names: () => result.current.products.map((product) => product.name),
   };
@@ -69,7 +52,7 @@ describe('ProductsProvider', () => {
   });
 
   it('serves only the seed from the server, where there is no storage to read', () => {
-    localStorage.setItem(ADDED_PRODUCTS_KEY, JSON.stringify([newProduct('Dell XPS 13')]));
+    localStorage.setItem(ADDED_PRODUCTS_KEY, JSON.stringify([createTestProduct('Dell XPS 13')]));
 
     const html = renderToString(
       <Catalogue>
@@ -100,8 +83,8 @@ describe('ProductsProvider', () => {
     ['a price that is not a number', { grossPrice: '123' }],
     ['a limited product with no stock level', { stockQuantity: undefined }],
   ])('skips an entry with %s and keeps the rest', (_, corruption) => {
-    const readable = newProduct('Dell XPS 13');
-    const corrupted = { ...newProduct('Dell XPS 15'), ...corruption };
+    const readable = createTestProduct('Dell XPS 13');
+    const corrupted = { ...createTestProduct('Dell XPS 15'), ...corruption };
     localStorage.setItem(ADDED_PRODUCTS_KEY, JSON.stringify([corrupted, readable]));
 
     const catalogue = renderCatalogue();
@@ -122,7 +105,7 @@ describe('ProductsProvider', () => {
 
   it('shows a product added in another tab', () => {
     const catalogue = renderCatalogue();
-    const stored = JSON.stringify([newProduct('Dell XPS 13')]);
+    const stored = JSON.stringify([createTestProduct('Dell XPS 13')]);
 
     act(() => {
       localStorage.setItem(ADDED_PRODUCTS_KEY, stored);

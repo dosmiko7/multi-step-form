@@ -87,17 +87,16 @@ export type AddedProductsStorage = {
 };
 
 /**
- * The products added in this browser, newest first, shaped for `useSyncExternalStore`. Storage is
- * read once and then held in memory, so the snapshot stays referentially stable between renders;
- * a save in another tab drops the copy and the next snapshot reads storage again.
+ * The products added in this browser, newest first, shaped for `useSyncExternalStore`. A save in
+ * another tab drops the cached copy, and the next snapshot reads storage again.
  */
 export function createAddedProductsStorage(): AddedProductsStorage {
-  let products: Product[] | undefined;
+  let cachedProducts: Product[] | undefined;
   const listeners = new Set<() => void>();
 
   const getSnapshot = () => {
-    products ??= readAddedProducts();
-    return products;
+    cachedProducts ??= readAddedProducts();
+    return cachedProducts;
   };
 
   return {
@@ -107,7 +106,7 @@ export function createAddedProductsStorage(): AddedProductsStorage {
         if (event.key !== ADDED_PRODUCTS_KEY) {
           return;
         }
-        products = undefined;
+        cachedProducts = undefined;
         onChange();
       };
 
@@ -120,8 +119,8 @@ export function createAddedProductsStorage(): AddedProductsStorage {
       };
     },
     add(product) {
-      products = [product, ...getSnapshot()];
-      writeAddedProducts(products);
+      cachedProducts = [product, ...getSnapshot()];
+      writeAddedProducts(cachedProducts);
       listeners.forEach((listener) => listener());
     },
   };

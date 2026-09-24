@@ -1,13 +1,14 @@
-import { act, render, screen, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
 import type { OnUrlUpdateFunction } from 'nuqs/adapters/testing';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
 import { getProducts } from '@/features/products/api/get-products';
-import { createProduct } from '@/features/products/domain/product';
 import { ADDED_PRODUCTS_KEY } from '@/features/products/stores/added-products-storage';
 import { ProductsProvider } from '@/features/products/stores/products-store';
+import { createTestProduct } from '@/testing/products';
+import { settleUrl } from '@/testing/settle-url';
 
 import { ProductList } from './product-list';
 import { ProductTableSkeleton } from './product-table';
@@ -84,19 +85,7 @@ describe('ProductList', () => {
 });
 
 describe('ProductList after a refresh', () => {
-  const ADDED = createProduct({
-    name: 'Dell XPS 13',
-    sku: 'DLXPS13',
-    manufacturer: 'dell',
-    category: 'komputery',
-    features: ['wifi'],
-    netPrice: 100,
-    grossPrice: 123,
-    vatRate: 23,
-    currency: 'PLN',
-    isAvailable: true,
-    isLimited: false,
-  });
+  const ADDED = createTestProduct('Dell XPS 13');
 
   /** The browser's path: the server's HTML first, then React hydrating it. */
   function refreshAt(searchParams: string) {
@@ -117,9 +106,6 @@ describe('ProductList after a refresh', () => {
     return { onUrlUpdate };
   }
 
-  /** nuqs writes the URL on a timer, so a correction that is coming has landed by now. */
-  const settle = () => act(() => new Promise((resolve) => setTimeout(resolve, 100)));
-
   it('stays on the page in the URL, with the products added before the refresh', async () => {
     localStorage.setItem(ADDED_PRODUCTS_KEY, JSON.stringify([ADDED]));
 
@@ -131,7 +117,7 @@ describe('ProductList after a refresh', () => {
       within(screen.getByRole('table')).getByRole('cell', { name: 'Xiaomi Smart Band 8' }),
     ).toBeInTheDocument();
 
-    await settle();
+    await settleUrl();
     expect(onUrlUpdate).not.toHaveBeenCalled();
   });
 });

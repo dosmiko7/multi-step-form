@@ -14,7 +14,7 @@ type ProductsContextValue = {
 
 const ProductsContext = createContext<ProductsContextValue | undefined>(undefined);
 
-const NOTHING_READ_ON_SERVER = () => undefined;
+const getServerSnapshot = () => undefined;
 
 export function ProductsProvider({
   initialProducts,
@@ -23,20 +23,20 @@ export function ProductsProvider({
   initialProducts: Product[];
   children: ReactNode;
 }) {
-  const [addedProducts] = useState(createAddedProductsStorage);
-  const added = useSyncExternalStore(
-    addedProducts.subscribe,
-    addedProducts.getSnapshot,
-    NOTHING_READ_ON_SERVER,
+  const [addedProductsStorage] = useState(createAddedProductsStorage);
+  const addedProducts = useSyncExternalStore(
+    addedProductsStorage.subscribe,
+    addedProductsStorage.getSnapshot,
+    getServerSnapshot,
   );
 
   const value = useMemo<ProductsContextValue>(
     () => ({
-      products: added ? [...added, ...initialProducts] : initialProducts,
-      isRestored: added !== undefined,
-      addProduct: addedProducts.add,
+      products: addedProducts ? [...addedProducts, ...initialProducts] : initialProducts,
+      isRestored: addedProducts !== undefined,
+      addProduct: addedProductsStorage.add,
     }),
-    [added, initialProducts, addedProducts],
+    [addedProducts, initialProducts, addedProductsStorage],
   );
 
   return <ProductsContext value={value}>{children}</ProductsContext>;
