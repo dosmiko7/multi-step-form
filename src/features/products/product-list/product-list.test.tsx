@@ -1,8 +1,12 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
-import { describe, expect, it } from 'vitest';
+import type { OnUrlUpdateFunction } from 'nuqs/adapters/testing';
+import { renderToString } from 'react-dom/server';
+import { describe, expect, it, vi } from 'vitest';
 
 import { getProducts } from '@/features/products/api/get-products';
+import { createProduct } from '@/features/products/domain/product';
+import { ADDED_PRODUCTS_KEY } from '@/features/products/stores/added-products-storage';
 import { ProductsProvider } from '@/features/products/stores/products-store';
 
 import { ProductList } from './product-list';
@@ -76,6 +80,59 @@ describe('ProductList', () => {
 
     expect(screen.getAllByText('Strona 1 z 1 · 5 produktów')).toHaveLength(2);
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+  });
+});
+
+describe('ProductList after a refresh', () => {
+  const ADDED = createProduct({
+    name: 'Dell XPS 13',
+    sku: 'DLXPS13',
+    manufacturer: 'dell',
+    category: 'komputery',
+    features: ['wifi'],
+    netPrice: 100,
+    grossPrice: 123,
+    vatRate: 23,
+    currency: 'PLN',
+    isAvailable: true,
+    isLimited: false,
+  });
+
+  /** The browser's path: the server's HTML first, then React hydrating it. */
+  function refreshAt(searchParams: string) {
+    const onUrlUpdate: OnUrlUpdateFunction = vi.fn();
+    const ui = (
+      <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={onUrlUpdate}>
+        <ProductsProvider initialProducts={getProducts()}>
+          <ProductList />
+        </ProductsProvider>
+      </NuqsTestingAdapter>
+    );
+
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(ui);
+    document.body.append(container);
+    render(ui, { container, hydrate: true });
+
+    return { onUrlUpdate };
+  }
+
+  /** nuqs writes the URL on a timer, so a correction that is coming has landed by now. */
+  const settle = () => act(() => new Promise((resolve) => setTimeout(resolve, 100)));
+
+  it('stays on the page in the URL, with the products added before the refresh', async () => {
+    localStorage.setItem(ADDED_PRODUCTS_KEY, JSON.stringify([ADDED]));
+
+    const { onUrlUpdate } = refreshAt('?page=2');
+
+    expect(await screen.findAllByText('Strona 2 z 2 · 6 produktów')).toHaveLength(2);
+    expect(screen.getByText('6 produktów w katalogu')).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('table')).getByRole('cell', { name: 'Xiaomi Smart Band 8' }),
+    ).toBeInTheDocument();
+
+    await settle();
+    expect(onUrlUpdate).not.toHaveBeenCalled();
   });
 });
 
