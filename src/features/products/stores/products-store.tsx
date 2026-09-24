@@ -3,8 +3,7 @@
 import { createContext, use, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react';
 
 import type { Product } from '@/features/products/domain/product';
-
-import { createAddedProductsStore } from './added-products-storage';
+import { createAddedProductsStore } from '@/features/products/stores/added-products-storage';
 
 type ProductsContextValue = {
   products: Product[];
@@ -14,8 +13,6 @@ type ProductsContextValue = {
 
 const ProductsContext = createContext<ProductsContextValue | undefined>(undefined);
 
-const getServerSnapshot = () => undefined;
-
 export function ProductsProvider({
   initialProducts,
   children,
@@ -24,19 +21,19 @@ export function ProductsProvider({
   children: ReactNode;
 }) {
   const [addedProductsStore] = useState(createAddedProductsStore);
-  const addedProducts = useSyncExternalStore(
+  const { products: addedProducts, hasReadStorage } = useSyncExternalStore(
     addedProductsStore.subscribe,
     addedProductsStore.getSnapshot,
-    getServerSnapshot,
+    addedProductsStore.getServerSnapshot,
   );
 
   const value = useMemo<ProductsContextValue>(
     () => ({
-      products: addedProducts ? [...addedProducts, ...initialProducts] : initialProducts,
-      hasReadStorage: addedProducts !== undefined,
+      products: [...addedProducts, ...initialProducts],
+      hasReadStorage,
       addProduct: addedProductsStore.add,
     }),
-    [addedProducts, initialProducts, addedProductsStore],
+    [addedProducts, hasReadStorage, initialProducts, addedProductsStore],
   );
 
   return <ProductsContext value={value}>{children}</ProductsContext>;

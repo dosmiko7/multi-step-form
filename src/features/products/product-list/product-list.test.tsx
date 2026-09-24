@@ -1,12 +1,12 @@
 import { render, screen, within } from '@testing-library/react';
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
 import type { OnUrlUpdateFunction } from 'nuqs/adapters/testing';
-import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
 import { getProducts } from '@/features/products/api/get-products';
 import { ADDED_PRODUCTS_KEY } from '@/features/products/stores/added-products-storage';
 import { ProductsProvider } from '@/features/products/stores/products-store';
+import { renderHydrated } from '@/testing/hydrate';
 import { createTestProduct } from '@/testing/products';
 import { settleUrl } from '@/testing/settle-url';
 
@@ -87,21 +87,16 @@ describe('ProductList', () => {
 describe('ProductList after a refresh', () => {
   const ADDED = createTestProduct('Dell XPS 13');
 
-  /** The browser's path: the server's HTML first, then React hydrating it. */
   function refreshAt(searchParams: string) {
     const onUrlUpdate: OnUrlUpdateFunction = vi.fn();
-    const ui = (
+
+    renderHydrated(
       <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={onUrlUpdate}>
         <ProductsProvider initialProducts={getProducts()}>
           <ProductList />
         </ProductsProvider>
-      </NuqsTestingAdapter>
+      </NuqsTestingAdapter>,
     );
-
-    const container = document.createElement('div');
-    container.innerHTML = renderToString(ui);
-    document.body.append(container);
-    render(ui, { container, hydrate: true });
 
     return { onUrlUpdate };
   }

@@ -1,52 +1,56 @@
 import type { Product } from '@/features/products/domain/product';
 
-/** Versioned: a change to the product's shape bumps it, and whatever the old key holds is ignored. */
 export const ADDED_PRODUCTS_KEY = 'multi-step-form:added-products:v1';
 
-/** Blocked storage and broken JSON read as nothing added yet. */
 function readAddedProducts(): Product[] {
   try {
     const stored: unknown = JSON.parse(localStorage.getItem(ADDED_PRODUCTS_KEY) ?? '[]');
-    return Array.isArray(stored) ? stored : [];
+    return Array.isArray(stored) ? (stored as Product[]) : [];
   } catch {
     return [];
   }
 }
 
-/** Blocked or full storage keeps the product for this visit only; the save itself succeeded. */
 function writeAddedProducts(products: Product[]) {
   try {
     localStorage.setItem(ADDED_PRODUCTS_KEY, JSON.stringify(products));
   } catch {}
 }
 
+export type AddedProductsSnapshot = {
+  hasReadStorage: boolean;
+  products: Product[];
+};
+
+const BEFORE_READ: AddedProductsSnapshot = { hasReadStorage: false, products: [] };
+
 export type AddedProductsStore = {
   subscribe: (onChange: () => void) => () => void;
-  getSnapshot: () => Product[];
+  getSnapshot: () => AddedProductsSnapshot;
+  getServerSnapshot: () => AddedProductsSnapshot;
   add: (product: Product) => void;
 };
 
-/**
- * The products added in this browser, newest first, shaped for `useSyncExternalStore`. A save in
- * another tab drops the cached copy, and the next snapshot reads storage again.
- */
 export function createAddedProductsStore(): AddedProductsStore {
-  let cachedProducts: Product[] | undefined;
+  let snapshot = BEFORE_READ;
   const listeners = new Set<() => void>();
 
   const getSnapshot = () => {
-    cachedProducts ??= readAddedProducts();
-    return cachedProducts;
+    if (snapshot === BEFORE_READ) {
+      snapshot = { hasReadStorage: true, products: readAddedProducts() };
+    }
+    return snapshot;
   };
 
   return {
     getSnapshot,
+    getServerSnapshot: () => BEFORE_READ,
     subscribe(onChange) {
       const onStorage = (event: StorageEvent) => {
         if (event.key !== ADDED_PRODUCTS_KEY) {
           return;
         }
-        cachedProducts = undefined;
+        snapshot = BEFORE_READ;
         onChange();
       };
 
@@ -59,8 +63,8 @@ export function createAddedProductsStore(): AddedProductsStore {
       };
     },
     add(product) {
-      cachedProducts = [product, ...getSnapshot()];
-      writeAddedProducts(cachedProducts);
+      snapshot = { hasReadStorage: true, products: [product, ...getSnapshot().products] };
+      writeAddedProducts(snapshot.products);
       listeners.forEach((listener) => listener());
     },
   };

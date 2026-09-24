@@ -1,13 +1,12 @@
 import { act, renderHook } from '@testing-library/react';
 import type { ReactNode } from 'react';
-import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { getProducts } from '@/features/products/api/get-products';
+import { ADDED_PRODUCTS_KEY } from '@/features/products/stores/added-products-storage';
+import { ProductsProvider, useProducts } from '@/features/products/stores/products-store';
+import { renderHydrated } from '@/testing/hydrate';
 import { createTestProduct } from '@/testing/products';
-
-import { ADDED_PRODUCTS_KEY } from './added-products-storage';
-import { ProductsProvider, useProducts } from './products-store';
 
 const SEED = getProducts();
 
@@ -54,13 +53,13 @@ describe('ProductsProvider', () => {
   it('serves only the seed from the server, where there is no storage to read', () => {
     localStorage.setItem(ADDED_PRODUCTS_KEY, JSON.stringify([createTestProduct('Dell XPS 13')]));
 
-    const html = renderToString(
+    const { serverHtml } = renderHydrated(
       <Catalogue>
         <CatalogueSummary />
       </Catalogue>,
     );
 
-    expect(html).toBe(`read storage: false, products: ${SEED.length}`);
+    expect(serverHtml).toBe(`read storage: false, products: ${SEED.length}`);
   });
 
   it.each([
