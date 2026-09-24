@@ -137,7 +137,10 @@ rows on screen, so paging never shifts the grid; a value past its budget stretch
 instead of getting cut. The exception is the SKU, sized to a typical code rather than its
 24-character cap, which would sit empty on every row; a longer code truncates behind the same
 tooltip as the name. The name fills the rest, never less than 240px — below that the table
-scrolls. The name and the SKU carry their budget on their own element, because a clamped
+would scroll, but cards take over under `lg`, before that point is reached: the design names
+only a desktop table and a phone card list, and the fixed columns leave a tablet-width name
+column too narrow to be the widest thing in the row. The name and the SKU carry their budget
+on their own element, because a clamped
 element still reports its full one-line width to the table, which is what pushed the table
 sideways. The tooltip shows the whole text, but only when something was actually cut off; it
 is checked on hover, so there is no resize observer per row. The trigger is not focusable —

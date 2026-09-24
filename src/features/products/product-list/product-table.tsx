@@ -53,7 +53,7 @@ function TableFrame({ rows }: { rows: TableRowValue[] }) {
 
 function TablePanel({ footer, children }: { footer: ReactNode; children: ReactNode }) {
   return (
-    <div className="hidden overflow-hidden rounded-lg border bg-card md:block">
+    <div className="hidden overflow-hidden rounded-lg border bg-card lg:block">
       {children}
       <div className="flex h-16 items-center justify-between gap-4 border-t bg-surface-subtle px-4">
         {footer}

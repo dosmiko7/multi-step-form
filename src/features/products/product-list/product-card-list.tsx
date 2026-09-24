@@ -9,7 +9,7 @@ import type { ProductRowView } from './product-row-view';
 
 function ProductCardListFrame({ footer, children }: { footer: ReactNode; children: ReactNode }) {
   return (
-    <div className="flex flex-col gap-6 md:hidden">
+    <div className="flex flex-col gap-6 lg:hidden">
       <ul className="flex flex-col gap-2">{children}</ul>
       <div className="flex flex-col items-center gap-4">{footer}</div>
     </div>
